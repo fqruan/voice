@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>用户注册</title>
+</head>
+<body>
+    <div>
+        <h3 th:text="'sorry, ' + ${session.res}"></h3>
+    </div>
+    <div>
+        <form action="register" method="post">
+            push here to sign up<input type="submit" value="sign up">
+        </form>
+    </div>
+</body>
+</html>
