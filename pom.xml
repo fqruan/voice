@@ -11,7 +11,7 @@
 	<groupId>com.orange</groupId>
 	<artifactId>voice</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<packaging>war</packaging>
+	<packaging>jar</packaging>
 	<name>voice</name>
 	<description>voice project for Spring Boot</description>
 
