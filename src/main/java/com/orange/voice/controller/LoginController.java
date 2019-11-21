@@ -24,7 +24,7 @@ public class LoginController {
 
     @RequestMapping(value = "/login", method = {RequestMethod.GET, RequestMethod.POST})
     public String login() {
-        return "/login";
+        return "login";
     }
 
     @RequestMapping(value = "/loginJudge", method = RequestMethod.POST)
@@ -44,17 +44,17 @@ public class LoginController {
 
     @RequestMapping(value = "/loginsuccess", method = {RequestMethod.GET, RequestMethod.POST})
     public String loginSuccess() {
-        return "/loginsuccess";
+        return "loginsuccess";
     }
 
     @RequestMapping(value = "/loginfail", method = {RequestMethod.GET, RequestMethod.POST})
     public String loginFail() {
-        return "/loginfail";
+        return "loginfail";
     }
 
     @RequestMapping(value = "/register", method = {RequestMethod.GET, RequestMethod.POST})
     public String register() {
-        return "/register";
+        return "register";
     }
 
     @RequestMapping(value = "/registerJudge", method = RequestMethod.POST)
@@ -79,11 +79,11 @@ public class LoginController {
 
     @RequestMapping(value = "/registersuccess", method = {RequestMethod.GET, RequestMethod.POST})
     public String registerSuccess() {
-        return "/registersuccess";
+        return "registersuccess";
     }
 
     @RequestMapping(value = "/registerfail", method = {RequestMethod.GET, RequestMethod.POST})
     public String registerFail() {
-        return "/registerfail";
+        return "registerfail";
     }
 }

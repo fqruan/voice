@@ -20,7 +20,7 @@ public class HelloWorldController {
 
     @RequestMapping(value = "/hello", method = RequestMethod.GET)
     public String index() {
-        return "/hello";
+        return "hello";
     }
 
     @ResponseBody
