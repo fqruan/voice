@@ -1,11 +1,14 @@
 package com.orange.voice.test;
 
+import com.orange.voice.util.SecurityUtil;
+
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class Test {
 
     public static void main(String[] args) {
-        func();
+        String s = "123A";
+        System.out.println(SecurityUtil.getMD5(s));
     }
 
     public static void func() {

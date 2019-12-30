@@ -9,8 +9,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import javax.servlet.http.HttpServletRequest;
 
 @Controller
-@RequestMapping("/hello")
-public class HelloWorldController {
+@RequestMapping("/test")
+public class TestController {
 
     @ResponseBody
     @RequestMapping("/hw")
@@ -24,7 +24,7 @@ public class HelloWorldController {
     }
 
     @ResponseBody
-    @RequestMapping(value = "/test", method = RequestMethod.GET)
+    @RequestMapping(value = "/ip", method = RequestMethod.GET)
     public String test(HttpServletRequest request) {
         String ip = IpUtil.getIpAddr(request);
         return ip;
