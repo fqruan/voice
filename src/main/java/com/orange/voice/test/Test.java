@@ -15,23 +15,70 @@ public class Test {
     public static void main(String[] args) {
         String s = "123A";
         System.out.println(SecurityUtil.getMD5(s));
+        String outUrl = "./src/main/resources/static";
+        System.out.println(outUrl);
         //AudioTrack audioTrack = new AudioTrack()
         try {
             //String outUrl = ResourceUtils.getURL("classpath:static").getPath().replace("%20", " ").substring(1);
 
-            String outUrl = "./src/main/resources/static";
-            System.out.println(outUrl);
-            //md5 -> base64 -> .mp3
-            SecurityUtil.decoderBase64File(SecurityUtil.getMD5(s), outUrl + "/" + "1.mp3");
 
-            //.mp3 -> base64
-            String out = SecurityUtil.encodeBase64File(outUrl + "/1.mp3");
+            //md5 -> base64 -> .mp3
+            //SecurityUtil.decoderBase64File(SecurityUtil.getMD5(s), outUrl + "/" + "test2000.mp3");
+
+            //.wav -> base64
+            String out = SecurityUtil.encodeBase64File(outUrl + "/test4000.wav");
+            //String out2 = SecurityUtil.encodeBase64File(outUrl + "/test2000.wav");
             System.out.println(out);
+            //System.out.println(out2);
+            SecurityUtil.decoderBase64File(out, outUrl + "/" + "out4000.wav");
+            System.out.println();
+            SecurityUtil.decoderBase64File(out, outUrl + "/" + "out24.wav");
+            System.out.println();
 
         } catch (Exception e) {
             e.printStackTrace();
         }
 
+
+        File f1 = new File(outUrl + "/test2000.wav");
+        File f2 = new File(outUrl + "/test4000.wav");
+        File f3 = new File(outUrl + "/out24.wav");
+        FileInputStream inpu1 = null;
+        FileInputStream inpu2 = null;
+        FileOutputStream out = null;
+        try {
+            inpu1 = new FileInputStream(f1);
+            out = new FileOutputStream(f3);
+            inpu2 = new FileInputStream(f2);
+
+            byte b[] = new byte[1024];
+            int len=0;
+            while ((len = inpu1.read(b))!= -1) {
+                for(int i = 0;i < len;i++) {
+                    out.write(b[i]);
+                }
+            }
+
+
+            while ((len = inpu2.read(b))!= -1) {
+                for(int i = 0;i<len;i++) {
+                    out.write (b[i]);
+                }
+            }
+
+            out.write(b);
+            System.out.println("合并完成");
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                inpu1.close();
+                inpu2.close();
+                out.close();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
     }
 
 //    public void start(int rate){
