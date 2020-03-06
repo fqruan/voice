@@ -8,11 +8,20 @@ import javax.sound.sampled.AudioFormat;
 import java.io.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import static com.orange.voice.util.SecurityUtil.*;
+
 public class Test {
 
     private File tempFile = null;
 
     public static void main(String[] args) {
+        String tes = "test";
+        String s1 = privateEncode(tes);
+        String s2 = privateDecode(tes);
+        String s3 = publicDecode(tes);
+        String s4 = publicEncode(tes);
+
+
         String s = "123A";
         System.out.println(SecurityUtil.getMD5(s));
         String outUrl = "./src/main/resources/static";

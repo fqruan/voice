@@ -1,10 +1,21 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>$Title$</title>
+    <title>VERIFY</title>
+    点击播放开始验证，请在3s内点击。
+
+    <!--    <embed src="../static/Refrain.mp3" hidden=false autostart=true loop=false>-->
 </head>
+
 <body>
-$END$
+<!--<audio th:src="@{${session.id}+.mp3}" controls autoplay></audio>-->
+<audio th:src="@{/test2000.wav}" controls autoplay></audio>
+<!--<iframe allow="autoplay" src="../static/Refrain.mp3"></iframe>-->
+
+<form action="verifyJudge" method="post">
+    <input type="submit" value="over">
+</form>
+
 </body>
 </html>

@@ -1,8 +1,13 @@
 package com.orange.voice.service;
 
+import com.orange.voice.bean.Mobile;
 import com.orange.voice.bean.User;
 import com.orange.voice.constant.UserConstant;
+import com.orange.voice.dao.MobileMapper;
 import com.orange.voice.dao.UserMapper;
+import com.orange.voice.util.AudioUtil;
+import com.orange.voice.util.RedisUtil;
+import com.orange.voice.util.VerifyUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +23,10 @@ public class LoginService {
     @SuppressWarnings("all")
     @Autowired
     UserMapper userMapper;
+
+    @SuppressWarnings("all")
+    @Autowired
+    MobileMapper mobileMapper;
 
     public String register(User user) {
         if (!isValidString(user.getUserName())) {
@@ -36,7 +45,7 @@ public class LoginService {
         return UserConstant.REGISTER_SUCCESS;
     }
 
-    public String login(String username, String password) {
+    public String login(String username, String password, String webIp) {
         LOGGER.info("username", username);
         LOGGER.info("password", password);
         if (!isValidString(username)) {
@@ -52,24 +61,17 @@ public class LoginService {
             return UserConstant.USER_PWD_ERROR;
         }
 
-        if (user.isVerify()) {
-            //todo
-            if (verify()) {
-                return UserConstant.LOGIN_SUCCESS;
-            }else {
-                return UserConstant.LOGIN_FAILED;
-            }
+        if (!user.isVerify()) {
+            return UserConstant.LOGIN_SUCCESS;
         }
 
-        return UserConstant.LOGIN_SUCCESS;
-    }
+        Mobile mobile = mobileMapper.getMobileInfoByUserId(user.getUserId());
+        String mobileId = mobile == null ? "xxx" : mobile.getMobileId();
+        String verifyStr = VerifyUtil.getVerifyString(user.getUserId(), webIp, mobileId);
+        AudioUtil.getStringToWAV(verifyStr, user.getUserId());
+        RedisUtil.set(user.getUserId() + "ip", webIp);
 
-    private boolean verify() {
-        Random random = new Random();
-        int num = random.nextInt(Integer.MAX_VALUE);
-        //todo
-        LOGGER.info("verify");
-        return true;
+        return UserConstant.LOGIN_VERIFY + user.getUserId();
     }
 
     private boolean isValidString(String s) {

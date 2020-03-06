@@ -6,6 +6,7 @@ public class UserConstant {
     public static final String USER_PWD_ERROR = "username or password error";
     public static final String LOGIN_SUCCESS = "successful login";
     public static final String LOGIN_FAILED = "fail login";
+    public static final String LOGIN_VERIFY = "login need verify";
 
     public static final String USERNAME_EXIST = "username has been used";
     public static final String REGISTER_SUCCESS = "successful register";

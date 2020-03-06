@@ -1,9 +1,11 @@
 package com.orange.voice.test;
 
 public class SinWave {
-    /** 正弦波的高度 **/
+
+    //正弦波的高度
     public static final int HEIGHT = 127;
-    /** 2PI **/
+
+    //2PI
     public static final double TWOPI = 2 * 3.1415;
 
     /**
@@ -15,8 +17,7 @@ public class SinWave {
      */
     public static byte[] sin(byte[] wave, int waveLen, int length) {
         for (int i = 0; i < length; i++) {
-            wave[i] = (byte) (HEIGHT * (1 - Math.sin(TWOPI
-                    * ((i % waveLen) * 1.00 / waveLen))));
+            wave[i] = (byte) (HEIGHT * (1 - Math.sin(TWOPI * ((i % waveLen) * 1.00 / waveLen))));
         }
         return wave;
     }

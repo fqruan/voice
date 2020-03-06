@@ -2,7 +2,9 @@ package com.orange.voice.controller;
 
 import com.orange.voice.bean.User;
 import com.orange.voice.constant.UserConstant;
+import com.orange.voice.service.AudioService;
 import com.orange.voice.service.LoginService;
+import com.orange.voice.util.IpUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +24,9 @@ public class LoginController {
     @Autowired
     LoginService loginService;
 
+    @Autowired
+    AudioService audioService;
+
     @RequestMapping(value = "/login", method = {RequestMethod.GET, RequestMethod.POST})
     public String login() {
         return "login";
@@ -31,15 +36,27 @@ public class LoginController {
     public String loginJudge(HttpServletRequest request, HttpSession session) {
         String username = request.getParameter("username");
         String password = request.getParameter("password");
-        String loginRes = loginService.login(username, password);
+        String ip = IpUtil.getIpAddr(request);
+        String loginRes = loginService.login(username, password, ip);
 
         if (loginRes.equals(UserConstant.LOGIN_SUCCESS)) {
             session.setAttribute("res", username);
             return "redirect:/login/loginsuccess";
         }
 
+        if (loginRes.startsWith(UserConstant.LOGIN_VERIFY)) {
+            int id = Integer.parseInt(loginRes.substring(UserConstant.LOGIN_VERIFY.length()));
+            session.setAttribute("id", id);
+            return "redirect:/login/verify";
+        }
+
         session.setAttribute("res", loginRes);
         return "redirect:/login/loginfail";
+    }
+
+    @RequestMapping(value = "/verify", method = {RequestMethod.GET, RequestMethod.POST})
+    public String loginVerify() {
+        return "verify";
     }
 
     @RequestMapping(value = "/loginsuccess", method = {RequestMethod.GET, RequestMethod.POST})
@@ -85,5 +102,23 @@ public class LoginController {
     @RequestMapping(value = "/registerfail", method = {RequestMethod.GET, RequestMethod.POST})
     public String registerFail() {
         return "registerfail";
+    }
+
+    @RequestMapping(value = "/verifyJudge", method = RequestMethod.POST)
+    public String verifyJudge(HttpSession session) {
+        try {
+            Thread.sleep(5000);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        boolean res = audioService.getVerifyRes();
+
+        if (res) {
+            session.setAttribute("res", res);
+            return "redirect:/login/registersuccess";
+        }
+
+        session.setAttribute("res", res);
+        return "redirect:/login/registerfail";
     }
 }

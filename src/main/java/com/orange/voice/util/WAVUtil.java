@@ -14,7 +14,7 @@ import java.io.RandomAccessFile;
 import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
 
-public class WAVTest {
+public class WAVUtil {
     private int headlength1 = 0;
     private int headlength2 = 0;
 
@@ -92,16 +92,16 @@ public class WAVTest {
         RandomAccessFile raf = new RandomAccessFile(filepath3, "rw");
         long filelength = raf.length();
         System.out.println(filepath3 + filelength);
-// 打开一个文件通道
+        // 打开一个文件通道
         FileChannel channel = raf.getChannel();
-// 映射文件中的某一部分数据以读写模式到内存中
+        // 映射文件中的某一部分数据以读写模式到内存中
         MappedByteBuffer buffer = channel.map(FileChannel.MapMode.READ_WRITE, 0, 44);// 文件头长度
         byte[] b = new byte[4];
         b[0] = buffer.get(4);
         b[1] = buffer.get(5);
         b[2] = buffer.get(6);
         b[3] = buffer.get(7);
-        int length1 = WAVTest.byteArrayToInt(WAVTest.byteToByte(b));
+        int length1 = WAVUtil.byteArrayToInt(WAVUtil.byteToByte(b));
         System.out.println(length1);// 显示data+44-8
 
         byte[] b1 = new byte[4];
@@ -109,13 +109,13 @@ public class WAVTest {
         b1[1] = buffer.get(41);
         b1[2] = buffer.get(42);
         b1[3] = buffer.get(43);
-        int length2 = WAVTest.byteArrayToInt(WAVTest.byteToByte(b1));
+        int length2 = WAVUtil.byteArrayToInt(WAVUtil.byteToByte(b1));
         System.out.println(length2);
         if (ifUpdate)// 修改头部文件
         {
             byte[] head1 = this.byteToByte(this.intToByteArray(headlength1));
             byte[] head2 = this.byteToByte(this.intToByteArray(headlength2));
-// 进行修改操作
+            // 进行修改操作
             buffer.put(4, head1[0]);
             buffer.put(5, head1[1]);
             buffer.put(6, head1[2]);
@@ -127,14 +127,13 @@ public class WAVTest {
 
             buffer.force();// 强制输出，在buffer中的改动生效到文件
             System.out.println("文件头修改成功");
-/**************************************** 进行查询，看修改是否生效 ***************/
 
             b = new byte[4];
             b[0] = buffer.get(4);
             b[1] = buffer.get(5);
             b[2] = buffer.get(6);
             b[3] = buffer.get(7);
-            length1 = WAVTest.byteArrayToInt(WAVTest.byteToByte(b));
+            length1 = WAVUtil.byteArrayToInt(WAVUtil.byteToByte(b));
             System.out.println(length1);// 显示data+44-8
             b1 = new byte[4];
 
@@ -142,7 +141,7 @@ public class WAVTest {
             b1[1] = buffer.get(41);
             b1[2] = buffer.get(42);
             b1[3] = buffer.get(43);
-            length2 = WAVTest.byteArrayToInt(WAVTest.byteToByte(b1));
+            length2 = WAVUtil.byteArrayToInt(WAVUtil.byteToByte(b1));
             System.out.println(length2);
 
         } else {
@@ -154,19 +153,6 @@ public class WAVTest {
         buffer.clear();
         channel.close();
         raf.close();
-
-    }
-
-    public static void main(String[] args) throws IOException {
-        String outUrl = "./src/main/resources/static";
-        String filepath1 = outUrl + "/test2000.wav";// 源文件1.wav
-        String filepath2 = outUrl + "/test4000.wav";// 源文件2.wav
-        String filepath3 = outUrl + "/out24.wav";// 合成文件addwav.wav
-        WAVTest wavTest = new WAVTest();
-        wavTest.addWav(filepath1, filepath2, filepath3);// data合成
-        wavTest.updateFileHead(filepath1, false);
-        wavTest.updateFileHead(filepath2, false);
-        wavTest.updateFileHead(filepath3, true);//头部合成
 
     }
 

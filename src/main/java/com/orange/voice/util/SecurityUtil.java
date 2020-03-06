@@ -26,18 +26,54 @@ public class SecurityUtil {
     //slat，used to mix md5
     private static final String slat = "=&%0525***&&%%$$#@--=";
 
-    /**
-     * md5
-     *
-     * @param str
-     * @return str
-     */
+    private static KeyPairGenerator keyPairGenerator;
+    private static KeyPair keyPair;
+    private static RSAPublicKey rsaPublicKey;
+    private static RSAPrivateKey rsaPrivateKey;
+    private static PKCS8EncodedKeySpec pkcs8EncodedKeySpec;
+    private static KeyFactory keyFactory;
+    private static Cipher cipher;
+
+    static {
+        try {
+            keyPairGenerator = KeyPairGenerator.getInstance("RSA");
+            keyPairGenerator.initialize(512);
+            keyPair = keyPairGenerator.generateKeyPair();
+            rsaPublicKey = (RSAPublicKey) keyPair.getPublic();
+            rsaPrivateKey = (RSAPrivateKey) keyPair.getPrivate();
+            pkcs8EncodedKeySpec = new PKCS8EncodedKeySpec(rsaPrivateKey.getEncoded());
+            keyFactory = KeyFactory.getInstance("RSA");
+            cipher = Cipher.getInstance("RSA");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    //md5
     public static String getMD5(String str) {
         String base = str + "/" + slat;
         String md5 = DigestUtils.md5DigestAsHex(base.getBytes());
         return md5;
     }
 
+    //base64 encode
+    public static String encodeBase64(String src) {
+        return new BASE64Encoder().encode(src.getBytes());
+    }
+
+    //base64 decoder
+    public static String decoderBase64(String src) {
+        try {
+            byte[] buffer = new BASE64Decoder().decodeBuffer(src);
+            return new String(buffer);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "error";
+        }
+    }
+
+    //base64 encode file
     public static String encodeBase64File(String path) throws Exception {
         File file = new File(path);
         FileInputStream inputFile = new FileInputStream(file);
@@ -47,6 +83,7 @@ public class SecurityUtil {
         return new BASE64Encoder().encode(buffer);
     }
 
+    //base64 decoder file
     public static void decoderBase64File(String base64Code, String targetName) throws Exception {
         byte[] buffer = new BASE64Decoder().decodeBuffer(base64Code);
         LOGGER.debug(targetName);
@@ -101,9 +138,9 @@ public class SecurityUtil {
             System.out.println("公钥加密、私钥解密 ---- 加密:" + Base64.encodeBase64String(result2));
 
             // 5.私钥解密、公钥加密 ---- 解密
-            PKCS8EncodedKeySpec pkcs8EncodedKeySpec5 = new PKCS8EncodedKeySpec(rsaPrivateKey.getEncoded());
+            PKCS8EncodedKeySpec pkcs8EncodedKeySpec2 = new PKCS8EncodedKeySpec(rsaPrivateKey.getEncoded());
             KeyFactory keyFactory5 = KeyFactory.getInstance("RSA");
-            PrivateKey privateKey5 = keyFactory5.generatePrivate(pkcs8EncodedKeySpec5);
+            PrivateKey privateKey5 = keyFactory5.generatePrivate(pkcs8EncodedKeySpec2);
             Cipher cipher5 = Cipher.getInstance("RSA");
             cipher5.init(Cipher.DECRYPT_MODE, privateKey5);
             byte[] result5 = cipher5.doFinal(result2);
@@ -112,5 +149,70 @@ public class SecurityUtil {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    public static String privateEncode(String src) {
+        String ans = "";
+        try {
+            PKCS8EncodedKeySpec pkcs8EncodedKeySpec = new PKCS8EncodedKeySpec(rsaPrivateKey.getEncoded());
+            PrivateKey privateKey = keyFactory.generatePrivate(pkcs8EncodedKeySpec);
+            cipher = Cipher.getInstance("RSA");
+            cipher.init(Cipher.ENCRYPT_MODE, privateKey);
+            byte[] result = cipher.doFinal(src.getBytes());
+            ans = new String(result);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return ans;
+    }
+
+    public static String publicDecode(String src) {
+        String ans = "";
+        try {
+            X509EncodedKeySpec x509EncodedKeySpec = new X509EncodedKeySpec(rsaPublicKey.getEncoded());
+            PublicKey publicKey = keyFactory.generatePublic(x509EncodedKeySpec);
+            cipher = Cipher.getInstance("RSA");
+            cipher.init(Cipher.DECRYPT_MODE, publicKey);
+            ans = new String(cipher.doFinal(src.getBytes()));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return ans;
+    }
+
+    public static String publicEncode(String src) {
+        String ans = "";
+        try {
+            X509EncodedKeySpec x509EncodedKeySpec2 = new X509EncodedKeySpec(rsaPublicKey.getEncoded());
+            KeyFactory keyFactory2 = KeyFactory.getInstance("RSA");
+            PublicKey publicKey2 = keyFactory2.generatePublic(x509EncodedKeySpec2);
+            Cipher cipher2 = Cipher.getInstance("RSA");
+            cipher2.init(Cipher.ENCRYPT_MODE, publicKey2);
+            byte[] result2 = cipher2.doFinal(src.getBytes());
+            ans = new String(result2);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return ans;
+    }
+
+    public static String privateDecode(String src) {
+        String ans = "";
+        try {
+            PKCS8EncodedKeySpec pkcs8EncodedKeySpec2 = new PKCS8EncodedKeySpec(rsaPrivateKey.getEncoded());
+            KeyFactory keyFactory5 = KeyFactory.getInstance("RSA");
+            PrivateKey privateKey5 = keyFactory5.generatePrivate(pkcs8EncodedKeySpec2);
+            Cipher cipher5 = Cipher.getInstance("RSA");
+            cipher5.init(Cipher.DECRYPT_MODE, privateKey5);
+            byte[] result5 = cipher5.doFinal(src.getBytes());
+            ans = new String(result5);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return ans;
     }
 }
