@@ -115,10 +115,10 @@ public class LoginController {
 
         if (res) {
             session.setAttribute("res", res);
-            return "redirect:/login/registersuccess";
+            return "redirect:/login/loginsuccess";
         }
 
         session.setAttribute("res", res);
-        return "redirect:/login/registerfail";
+        return "redirect:/login/loginfail";
     }
 }
