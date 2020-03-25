@@ -8,19 +8,210 @@ import java.util.stream.IntStream;
 
 public class Leet {
 
+    public void test() {
+        String s = "\\";
+        System.out.println(s.length() + "_" + s);
+    }
+
     public static void main(String[] args) {
         Leet l = new Leet();
-        int[] a = new int[]{1,2,3,4,5};
+        int[] a = new int[]{3,4,1,2};
         int[] b = new int[]{4,5,3,2,1};
         String[] strings = new String[]{"doeeqiy","yabhbqe","twckqte"};
-        System.out.println(l.minDeletionSize(strings));
+        System.out.println(l.maxWidthRamp3(a));
 //        l.test();
     }
 
-    public void test() {
-        String s = "N3_WH_Central_West_NSW_RefYear2011.csv";
-        s = s.replaceAll("N.*_WH_.*\\.csv", "1");
-        System.out.println(s);
+    public int[] createTargetArray(int[] nums, int[] index) {
+        List<Integer> list = new ArrayList<>();
+        for (int i = 0; i < index.length; i++) {
+            list.add(index[i], nums[i]);
+        }
+
+        return list.stream().mapToInt(Integer::valueOf).toArray();
+    }
+
+    public int findTheDistanceValue(int[] arr1, int[] arr2, int d) {
+        Map<Integer, Integer> map = new HashMap<>();
+        for (int x : arr2) {
+            map.put(x, map.getOrDefault(x, 0) + 1);
+        }
+
+        int ans = 0;
+        A : for (int i = 0; i < arr1.length; i++) {
+            for (int j = arr1[i] - d; j <= arr1[i] + d; j++) {
+                if (map.containsKey(j)) continue A;
+            }
+            ans++;
+        }
+
+        return ans;
+    }
+
+    public String[] spellchecker(String[] wordlist, String[] queries) {
+        Set<String> exact = new HashSet();
+        Map<String, String> cap = new HashMap();
+        Map<String, String> vowels = new HashMap();
+
+        for (String w : wordlist) {
+            exact.add(w);
+            if (!cap.containsKey(w.toLowerCase()))
+                cap.put(w.toLowerCase(), w);
+            String s = w.toLowerCase()
+                    .replaceAll("i", "1")
+                    .replaceAll("o", "1")
+                    .replaceAll("e", "1")
+                    .replaceAll("u", "1")
+                    .replaceAll("a", "1");
+            if (!vowels.containsKey(s))
+                vowels.put(s, w);
+        }
+
+        String[] ret = new String[queries.length];
+        int i = 0;
+
+        for (String q : queries) {
+            if (exact.contains(q)) { ret[i++] = q; continue; }
+            if (cap.containsKey(q.toLowerCase())) { ret[i++] = cap.get(q.toLowerCase()); continue; }
+            String s = q.toLowerCase()
+                    .replaceAll("i", "1")
+                    .replaceAll("o", "1")
+                    .replaceAll("e", "1")
+                    .replaceAll("u", "1")
+                    .replaceAll("a", "1");
+
+            ret[i++] = vowels.getOrDefault(s, "");
+        }
+
+        return ret;
+    }
+
+    public double minAreaFreeRect(int[][] points) {
+        Map<String, Map<Double, List<int[]>>> map = new HashMap<>();
+        int n = points.length;
+        for (int i = 0; i < n; i++) {
+            for (int j = i + 1; j < n; j++) {
+                double centerX = ((double)points[i][0] + points[j][0]) / 2;
+                double centerY = ((double)points[i][1] + points[j][1]) / 2;
+                double dist = ((double)points[i][0] - points[j][0]) * (points[i][0] - points[j][0]) + (points[i][1] - points[j][1]) * (points[i][1] - points[j][1]);
+                String str = centerX + " " + centerY;
+                map.putIfAbsent(str, new HashMap<>());
+                map.get(str).putIfAbsent(dist, new ArrayList<>());
+                map.get(str).get(dist).add(points[i]);
+                map.get(str).get(dist).add(points[j]);
+            }
+        }
+        double min = Double.MAX_VALUE;
+        for (String c : map.keySet()) {
+            for (double d : map.get(c).keySet()) {
+                List<int[]> list = map.get(c).get(d);
+                if (list.size() >= 4) {
+                    for (int i = 0; i + 2 < list.size(); i += 2) {
+                        for (int j = i + 2; j + 1 < list.size(); j += 2) {
+                            double dist1 = Math.sqrt(((double)list.get(i)[0] - list.get(j)[0]) * ((double)list.get(i)[0] - list.get(j)[0]) + ((double)list.get(i)[1] - list.get(j)[1]) * ((double)list.get(i)[1] - list.get(j)[1]));
+                            double dist2 = Math.sqrt(((double)list.get(i)[0] - list.get(j + 1)[0]) * ((double)list.get(i)[0] - list.get(j + 1)[0]) + ((double)list.get(i)[1] - list.get(j + 1)[1]) * ((double)list.get(i)[1] - list.get(j + 1)[1]));
+                            min = Math.min(dist1 * dist2, min);
+                        }
+                    }
+                }
+            }
+        }
+        return min == Double.MAX_VALUE ? 0 : min;
+    }
+
+    public int maxWidthRamp3(int[] A) {
+        int[] indexes = new int[A.length];
+        int num0 = A[0], len = 1;
+        for(int i = 1; i < A.length; i++) {
+            if(A[i] < num0) {
+                num0 = A[i];
+                indexes[len++] = i;
+            }
+        }
+        num0 = Integer.MIN_VALUE;
+        int maxWidth = 0;
+        for(int i = A.length - 1; i > maxWidth; i--) {
+            if(A[i] > num0) {
+                num0 = A[i];
+                for(;; len--) {
+                    if(len == 0 || A[indexes[len - 1]] > A[i]) {
+                        maxWidth = Math.max(maxWidth, i - indexes[len]);
+                        break;
+                    }
+                }
+            }
+        }
+        return maxWidth;
+    }
+
+    public int maxWidthRamp2(int[] A) {
+        int[] indexes = new int[A.length];
+        int num0 = A[0], len = 1;
+        for(int i = 1; i < A.length; i++) {
+            if(A[i] < num0) {
+                num0 = A[i];
+                indexes[len++] = i;
+            }
+        }
+        num0 = Integer.MIN_VALUE;
+        int maxWidth = 0;
+        for(int i = A.length - 1; i > maxWidth; i--) {
+            if(A[i] > num0) {
+                num0 = A[i];
+                for(;; len--) {
+                    if(len == 0 || A[indexes[len - 1]] > A[i]) {
+                        maxWidth = Math.max(maxWidth, i - indexes[len]);
+                        break;
+                    }
+                }
+            }
+        }
+        return maxWidth;
+    }
+
+    public int maxWidthRamp(int[] A) {
+        for (int i = A.length - 1; i > 0; i--) {
+            for (int j = 0; j + i < A.length; j++) {
+                if (A[i + j] >= A[j]) return i;
+            }
+        }
+
+        return 0;
+    }
+
+    public int regionsBySlashes(String[] grid) {
+        int ans = 1;
+        if (grid[0].charAt(0) == '/') ans++;
+        else if (grid[0].charAt(0) == '\\') {
+            if (grid[1].charAt(1) == '\\') ans++;
+        }
+        if (grid[0].charAt(1) == '\\') ans++;
+        else if (grid[0].charAt(1) == '/') {
+            if (grid[1].charAt(0) == '/') ans++;
+        }
+        if (grid[1].charAt(0) == '\\') ans++;
+        if (grid[1].charAt(1) == '/') ans++;
+
+        if (grid[0].charAt(1) == '/' && grid[1].charAt(0) == '/' && grid[0].charAt(0) == '\\' && grid[1].charAt(1) == '\\') ans++;
+        return ans;
+    }
+
+    public boolean isCompleteTree(TreeNode root) {
+        if(root == null) return true;
+        //res[0]: count of nodes
+        //res[1]: index of nodes, if is complete tree, index = count - 1
+        int [] res = new int[2];
+        isCompleteTree(root, res, 1);
+        return res[0] == res[1];
+    }
+
+    private void isCompleteTree(TreeNode root, int[] res, int index) {
+        if(root != null) {
+            res[0]++;
+            res[1] = Math.max(res[1], index);
+            isCompleteTree(root.left, res, 2 * index);
+            isCompleteTree(root.right, res, 2 * index + 1);
+        }
     }
 
     public int[] prisonAfterNDays(int[] cells, int N) {
